@@ -15,5 +15,22 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/',  'App\Http\Controllers\Auth\AuthController@showLogin')->name('showLogin');
-Route::post('/login',  'App\Http\Controllers\Auth\AuthController@login')->name('login');
+//ログイン前でないと表示されない
+Route::middleware(['guest'])->group(function () {
+    //ログインフォーム表示
+    Route::get('/',  'App\Http\Controllers\Auth\AuthController@showLogin')->name('login.show');
+
+    //ログイン処理
+    Route::post('/login',  'App\Http\Controllers\Auth\AuthController@login')->name('login');
+});
+
+//ログイン後でないと表示されない
+Route::middleware(['auth'])->group(function () {
+    //ホーム画面
+    Route::get('/home', function(){
+        return view('home');
+    })->name('home');
+
+    //ログアウト
+    Route::post('/logout',[AuthController::class,'logout'])->name('logout');
+});
